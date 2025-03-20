@@ -10,6 +10,13 @@
     android:paddingRight="16dp"
     android:paddingTop="16dp">
 
+    <FrameLayout
+
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
 
     <EditText
         android:id="@+id/editTextName"
@@ -52,6 +59,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
+
+    <FrameLayout
+
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 
 </LinearLayout>

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.TextUtils.replace
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -24,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var expenseRecyclerView: RecyclerView
     private lateinit var expenseAdapter: ExpenseAdapter
     private lateinit var financialTipsButton: Button
+    private lateinit var footerFragment: FooterFragment
 
 
 
@@ -32,6 +34,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         Log.d("ActivityLifecycle", "onCreate called")
 
+        addHeaderFragment()
+        footerFragment = FooterFragment()
+        addFooterFragment()
 
         // using id to find UI elements
         editTextName = findViewById(R.id.editTextName)
@@ -48,7 +53,7 @@ class MainActivity : AppCompatActivity() {
 
         financialTipsButton.setOnClickListener{
             val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse("https://www.theglobeandmail.com/business/adv/article-how-to-build-a-balanced-us-portfolio-in-2025/?utm_source=google&utm_medium=sem&utm_campaign=544123&utm_content=balanced_portfolio&gad_source=1&gclid=EAIaIQobChMIqcyewZCZjAMVPUn_AR0OdRxZEAAYAyAAEgLMN_D_BwE")
+            intent.data = Uri.parse("https://www.theglobeandmail.com/investing/personal-finance/")
             startActivity(intent)
         }
 
@@ -80,13 +85,35 @@ class MainActivity : AppCompatActivity() {
             editTextName.text.clear()
             editTextAmount.text.clear()
             editTextDate.text.clear()
-        }
+            update()
 
+        }
+        update()
+
+
+    }
+
+    private fun addHeaderFragment() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.header, HeaderFragment())
+            .commit()
+    }
+
+    private fun addFooterFragment() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.footer, footerFragment)
+            .commit()
+    }
+
+    private fun update(){
+        val total = expenseArray.sumOf { it.amount }
+        footerFragment.update(total)
     }
 
     fun deleteExpense(position:Int){
         expenseArray.removeAt(position)
         expenseAdapter.notifyItemRemoved(position)
+        update()
     }
 
     private fun showDetails(expense: Expense){
