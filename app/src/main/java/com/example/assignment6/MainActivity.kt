@@ -1,6 +1,8 @@
 package com.example.assignment6
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -21,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var submitButton: Button
     private lateinit var expenseRecyclerView: RecyclerView
     private lateinit var expenseAdapter: ExpenseAdapter
+    private lateinit var financialTipsButton: Button
 
 
 
@@ -36,11 +39,18 @@ class MainActivity : AppCompatActivity() {
         editTextDate = findViewById(R.id.editTextDate)
         submitButton = findViewById(R.id.submitButton)
         expenseRecyclerView = findViewById(R.id.expenseRecyclerView)
+        financialTipsButton = findViewById(R.id.financialTipsButton)
 
-        expenseAdapter = ExpenseAdapter(expenseArray, this::deleteExpense)
+        expenseAdapter = ExpenseAdapter(expenseArray, this::deleteExpense, this::showDetails)
 
         expenseRecyclerView.layoutManager = LinearLayoutManager(this)
         expenseRecyclerView.adapter = expenseAdapter
+
+        financialTipsButton.setOnClickListener{
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse("https://www.theglobeandmail.com/business/adv/article-how-to-build-a-balanced-us-portfolio-in-2025/?utm_source=google&utm_medium=sem&utm_campaign=544123&utm_content=balanced_portfolio&gad_source=1&gclid=EAIaIQobChMIqcyewZCZjAMVPUn_AR0OdRxZEAAYAyAAEgLMN_D_BwE")
+            startActivity(intent)
+        }
 
         submitButton.setOnClickListener{
             val name = editTextName.text.toString().trim()
@@ -77,6 +87,16 @@ class MainActivity : AppCompatActivity() {
     fun deleteExpense(position:Int){
         expenseArray.removeAt(position)
         expenseAdapter.notifyItemRemoved(position)
+    }
+
+    private fun showDetails(expense: Expense){
+        val intent = Intent(this, ExpenseDetailsActivity::class.java)
+        intent.putExtra("NAME", expense.name)
+        intent.putExtra("AMOUNT", expense.amount)
+        intent.putExtra("DATE", expense.date)
+
+        // Start next activity
+        startActivity(intent)
     }
 
     override fun onStart() {

@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ExpenseAdapter(
     private val expenseArray: MutableList<Expense>,
-    private val delete: (Int) -> Unit
+    private val delete: (Int) -> Unit,
+    private val showDetails: (Expense)->Unit
 )
     :RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder>(){
 
@@ -17,6 +18,7 @@ class ExpenseAdapter(
             val textViewName: TextView = view.findViewById(R.id.textViewName)
             val textViewAmount: TextView = view.findViewById(R.id.textViewAmount)
             val button: Button = view.findViewById(R.id.deleteButton)
+            val showDetailsButton: Button = view.findViewById(R.id.showDetailsButton)
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseViewHolder {
@@ -34,6 +36,10 @@ class ExpenseAdapter(
 
         holder.button.setOnClickListener{
             delete(position)
+        }
+
+        holder.showDetailsButton.setOnClickListener{
+            showDetails(expense)
         }
     }
 }

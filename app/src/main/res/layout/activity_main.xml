@@ -41,10 +41,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Add Expense" />
+    <Button
+        android:id="@+id/financialTipsButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Financial Tips" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/expenseRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
+
+
 </LinearLayout>
