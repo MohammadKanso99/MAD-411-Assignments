@@ -1,21 +1,24 @@
 package com.example.assignment6
 
-import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.text.TextUtils.replace
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import java.io.FileNotFoundException
+import java.io.IOException
+import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
+import java.io.File
+
+private const val FILE_NAME = "expense.txt"
 
 class MainActivity : AppCompatActivity() {
-
 
     private val expenseArray = mutableListOf<Expense>()
     private lateinit var editTextName: EditText
@@ -27,8 +30,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var financialTipsButton: Button
     private lateinit var footerFragment: FooterFragment
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -38,7 +39,6 @@ class MainActivity : AppCompatActivity() {
         footerFragment = FooterFragment()
         addFooterFragment()
 
-        // using id to find UI elements
         editTextName = findViewById(R.id.editTextName)
         editTextAmount = findViewById(R.id.editTextAmount)
         editTextDate = findViewById(R.id.editTextDate)
@@ -47,32 +47,28 @@ class MainActivity : AppCompatActivity() {
         financialTipsButton = findViewById(R.id.financialTipsButton)
 
         expenseAdapter = ExpenseAdapter(expenseArray, this::deleteExpense, this::showDetails)
-
         expenseRecyclerView.layoutManager = LinearLayoutManager(this)
         expenseRecyclerView.adapter = expenseAdapter
 
-        financialTipsButton.setOnClickListener{
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse("https://www.theglobeandmail.com/investing/personal-finance/")
+        financialTipsButton.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.theglobeandmail.com/investing/personal-finance/"))
             startActivity(intent)
         }
 
-        submitButton.setOnClickListener{
+        submitButton.setOnClickListener {
             val name = editTextName.text.toString().trim()
             val amount = editTextAmount.text.toString().trim().toDoubleOrNull()
             val date = editTextDate.text.toString().trim()
 
-            if (name.isEmpty()){
+            if (name.isEmpty()) {
                 editTextName.error = "Invalid Name!"
                 return@setOnClickListener
             }
-
-            if (amount == null || amount <= 0){
+            if (amount == null || amount <= 0) {
                 editTextAmount.error = "Invalid Amount"
                 return@setOnClickListener
             }
-
-            if(date.isEmpty()){
+            if (date.isEmpty()) {
                 editTextDate.error = "Invalid Date"
                 return@setOnClickListener
             }
@@ -81,16 +77,17 @@ class MainActivity : AppCompatActivity() {
             expenseArray.add(expense)
             expenseAdapter.notifyItemInserted(expenseArray.size - 1)
 
-            // clear form
             editTextName.text.clear()
             editTextAmount.text.clear()
             editTextDate.text.clear()
             update()
-
+            saveExpensesToFile(this, expenseArray)
         }
+
+        expenseArray.clear()
+        expenseArray.addAll(loadExpensesFromFile(this))
+        expenseAdapter.notifyDataSetChanged()
         update()
-
-
     }
 
     private fun addHeaderFragment() {
@@ -105,49 +102,52 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
-    private fun update(){
+    private fun update() {
         val total = expenseArray.sumOf { it.amount }
         footerFragment.update(total)
     }
 
-    fun deleteExpense(position:Int){
+    fun deleteExpense(position: Int) {
         expenseArray.removeAt(position)
         expenseAdapter.notifyItemRemoved(position)
         update()
+        saveExpensesToFile(this, expenseArray)
     }
 
-    private fun showDetails(expense: Expense){
-        val intent = Intent(this, ExpenseDetailsActivity::class.java)
-        intent.putExtra("NAME", expense.name)
-        intent.putExtra("AMOUNT", expense.amount)
-        intent.putExtra("DATE", expense.date)
-
-        // Start next activity
+    private fun showDetails(expense: Expense) {
+        val intent = Intent(this, ExpenseDetailsActivity::class.java).apply {
+            putExtra("NAME", expense.name)
+            putExtra("AMOUNT", expense.amount)
+            putExtra("DATE", expense.date)
+        }
         startActivity(intent)
     }
 
-    override fun onStart() {
-        super.onStart()
-        Log.d("ActivityLifecycle", "onStart called")
+    private fun saveExpensesToFile(context: Context, expenseList: List<Expense>) {
+        try {
+            val json = Gson().toJson(expenseList)
+            context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE).use { it.write(json.toByteArray()) }
+            Log.d("FileStorage", "Expenses saved successfully")
+        } catch (e: IOException) {
+            Log.e("FileStorage", "Error saving expenses: ${e.message}")
+        }
     }
 
-    override fun onResume() {
-        super.onResume()
-        Log.d("ActivityLifecycle", "onResume called")
-    }
+    private fun loadExpensesFromFile(context: Context): MutableList<Expense> {
+        val expenseList = mutableListOf<Expense>()
+        try {
+            val file = File(context.filesDir, FILE_NAME)
+            if (!file.exists()) return expenseList
 
-    override fun onPause() {
-        super.onPause()
-        Log.d("ActivityLifecycle", "onPause called")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d("ActivityLifecycle", "onStop called")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("ActivityLifecycle", "onDestroy called")
+            val json = file.readText()
+            val loadedExpenses: List<Expense> = Gson().fromJson(json, object : TypeToken<List<Expense>>() {}.type)
+            expenseList.addAll(loadedExpenses)
+            Log.d("FileStorage", "Expenses loaded successfully")
+        } catch (e: FileNotFoundException) {
+            Log.e("FileStorage", "File not found: ${e.message}")
+        } catch (e: IOException) {
+            Log.e("FileStorage", "Error reading file: ${e.message}")
+        }
+        return expenseList
     }
 }
