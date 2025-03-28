@@ -2,7 +2,6 @@ package com.example.assignment6
 
 import android.os.Bundle
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -10,7 +9,6 @@ import androidx.core.view.WindowInsetsCompat
 class ExpenseDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_expense_details)
 
         val textViewName2: TextView = findViewById(R.id.textViewName2)
