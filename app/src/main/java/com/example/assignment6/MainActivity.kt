@@ -112,6 +112,7 @@ class MainActivity : AppCompatActivity() {
         expenseAdapter.notifyItemRemoved(position)
         update()
         saveExpensesToFile(this, expenseArray)
+
     }
 
     private fun showDetails(expense: Expense) {
