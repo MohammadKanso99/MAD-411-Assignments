@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Expense Name -->
+    <EditText
+        android:id="@+id/editTextName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Expense Name"
+        android:textSize="16sp"/>
+
+    <!-- Expense Amount -->
+    <EditText
+        android:id="@+id/editTextAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Amount"
+        android:textSize="14sp"
+        android:inputType="numberDecimal"/>
+
+    <!-- Expense Date -->
+    <EditText
+        android:id="@+id/editTextDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Date (DD/MM/YYYY)"
+        android:textSize="14sp"
+        android:focusable="false"
+        android:clickable="true"/>
+
+    <!-- Add Expense Button -->
+    <Button
+        android:id="@+id/submitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Expense"
+        android:layout_gravity="center"/>
+
+    <!-- Financial Tips Button -->
+    <Button
+        android:id="@+id/financialTipsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Financial Tips"
+        android:layout_gravity="center"/>
+
+</LinearLayout>
