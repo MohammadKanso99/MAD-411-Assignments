@@ -101,8 +101,9 @@ class MainFragment : Fragment(), ExpenseAdapter.ExpenseListener {
                     bundle.getDouble("expenseAmount", 0.00),
                     bundle.getString("expenseDate", "")
                 )
-
-                val index = expenseList.indexOfFirst { it.name == updatedExpense.name }
+                Log.d("onViewCreated", updatedExpense.id.toString())
+                //Changed to id instead of name
+                val index = expenseList.indexOfFirst { it.id == updatedExpense.id }
                 if (index != -1) {
                     expenseList[index] = updatedExpense
                     expenseAdapter.notifyItemChanged(index)
